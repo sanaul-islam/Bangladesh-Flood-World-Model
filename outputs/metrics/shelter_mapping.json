@@ -1,0 +1,13 @@
+{
+  "source": "OSM",
+  "source_path": "/run/media/sanaul/Course and project work/Weather-world-model-project/data/static/shelters/shelters.shp",
+  "database": "/run/media/sanaul/Course and project work/Weather-world-model-project/data/processed/road_network.sqlite",
+  "output_crs": "EPSG:32646",
+  "source_features": 281,
+  "shelters_stored": 281,
+  "shelters_mapped_to_roads": 274,
+  "shelters_unmapped": 7,
+  "mapping_rate": 0.9750889679715302,
+  "average_shelter_road_distance_m": 252.66715105607184,
+  "maximum_shelter_road_distance_m": 4719.900673218131
+}

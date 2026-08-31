@@ -1,0 +1,20 @@
+{
+  "bridge_source": "/run/media/sanaul/Course and project work/Weather-world-model-project/data/static/bridges/bridges.shp",
+  "road_database": "/run/media/sanaul/Course and project work/Weather-world-model-project/data/processed/road_network.sqlite",
+  "source_crs": "EPSG:4326",
+  "output_crs": "EPSG:32646",
+  "total_source_features": 25500,
+  "processed_bridge_features": 25500,
+  "mapped_bridges": 19861,
+  "unmapped_bridges": 5639,
+  "mapping_rate": 0.7788627450980392,
+  "bridge_node_mappings": 19861,
+  "bridge_edge_mappings": 37490,
+  "average_bridge_node_distance_m": 13.37371410066206,
+  "maximum_bridge_node_distance_m": 149.9938253049708,
+  "grid_size_m": 1000.0,
+  "maximum_mapping_distance_m": 150.0,
+  "chunk_size": 2000,
+  "database_size_mb": 976.96484375,
+  "networkx_global_graph": false
+}

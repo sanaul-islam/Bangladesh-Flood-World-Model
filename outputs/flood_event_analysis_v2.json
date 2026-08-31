@@ -1,0 +1,64 @@
+{
+  "number_of_events": 4,
+  "mean_peak_error_m3_s": 525.572265625,
+  "median_peak_error_m3_s": 504.19140625,
+  "mean_relative_peak_error": 0.006130587481382961,
+  "median_relative_peak_error": 0.005951486479050913,
+  "mean_absolute_timing_error_days": 0.5,
+  "max_absolute_timing_error_days": 1.0,
+  "severe_underprediction_events": 0,
+  "events": [
+    {
+      "event": 1,
+      "start": "2024-08-13",
+      "end": "2024-09-06",
+      "duration_days": 25,
+      "actual_peak_m3_s": 86142.59375,
+      "predicted_peak_m3_s": 87069.65625,
+      "persistence_peak_m3_s": 86142.59375,
+      "peak_absolute_error_m3_s": 927.0625,
+      "peak_relative_error": 0.010761952474875415,
+      "peak_timing_error_days": -1,
+      "persistence_timing_error_days": 1
+    },
+    {
+      "event": 2,
+      "start": "2024-09-20",
+      "end": "2024-09-30",
+      "duration_days": 11,
+      "actual_peak_m3_s": 89825.3203125,
+      "predicted_peak_m3_s": 89992.1640625,
+      "persistence_peak_m3_s": 89825.3203125,
+      "peak_absolute_error_m3_s": 166.84375,
+      "peak_relative_error": 0.001857424492554603,
+      "peak_timing_error_days": 1,
+      "persistence_timing_error_days": 1
+    },
+    {
+      "event": 3,
+      "start": "2024-10-02",
+      "end": "2024-10-09",
+      "duration_days": 8,
+      "actual_peak_m3_s": 84399.5703125,
+      "predicted_peak_m3_s": 85175.421875,
+      "persistence_peak_m3_s": 84399.5703125,
+      "peak_absolute_error_m3_s": 775.8515625,
+      "peak_relative_error": 0.009192600858361153,
+      "peak_timing_error_days": 0,
+      "persistence_timing_error_days": 1
+    },
+    {
+      "event": 4,
+      "start": "2025-08-08",
+      "end": "2025-08-18",
+      "duration_days": 11,
+      "actual_peak_m3_s": 85793.109375,
+      "predicted_peak_m3_s": 85560.578125,
+      "persistence_peak_m3_s": 85793.109375,
+      "peak_absolute_error_m3_s": 232.53125,
+      "peak_relative_error": 0.0027103720997406736,
+      "peak_timing_error_days": 0,
+      "persistence_timing_error_days": 1
+    }
+  ]
+}

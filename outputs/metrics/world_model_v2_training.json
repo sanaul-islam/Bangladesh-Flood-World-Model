@@ -1,0 +1,124 @@
+{
+  "model": "World Model V2",
+  "task": "7-day multi-horizon discharge forecasting",
+  "history_length": 14,
+  "horizon": 7,
+  "batch_size": 2,
+  "hidden_channels": 16,
+  "epochs": 15,
+  "learning_rate": 0.0005,
+  "weight_decay": 0.0001,
+  "gradient_clip": 1.0,
+  "start_teacher_forcing": 1.0,
+  "end_teacher_forcing": 0.25,
+  "best_validation_loss": 0.019179819685569505,
+  "checkpoint": "/run/media/sanaul/Course and project work/Weather-world-model-project/checkpoints/world_model_v2_best.pt",
+  "normalization": "/run/media/sanaul/Course and project work/Weather-world-model-project/data/features/training_v3/v2_normalization.json",
+  "history": [
+    {
+      "epoch": 1,
+      "train_loss": 0.04608241424173245,
+      "validation_loss": 0.578440345278188,
+      "teacher_forcing_ratio": 1.0,
+      "learning_rate": 0.0005
+    },
+    {
+      "epoch": 2,
+      "train_loss": 0.009086639846671084,
+      "validation_loss": 0.0623008380755444,
+      "teacher_forcing_ratio": 0.9464285714285714,
+      "learning_rate": 0.0005
+    },
+    {
+      "epoch": 3,
+      "train_loss": 0.007272061967242766,
+      "validation_loss": 0.049839606511686306,
+      "teacher_forcing_ratio": 0.8928571428571429,
+      "learning_rate": 0.0005
+    },
+    {
+      "epoch": 4,
+      "train_loss": 0.007438168950732155,
+      "validation_loss": 0.042909162758162596,
+      "teacher_forcing_ratio": 0.8392857142857143,
+      "learning_rate": 0.0005
+    },
+    {
+      "epoch": 5,
+      "train_loss": 0.008950985216130181,
+      "validation_loss": 0.08880546254003283,
+      "teacher_forcing_ratio": 0.7857142857142857,
+      "learning_rate": 0.0005
+    },
+    {
+      "epoch": 6,
+      "train_loss": 0.008590978778926816,
+      "validation_loss": 0.050702149968628124,
+      "teacher_forcing_ratio": 0.7321428571428572,
+      "learning_rate": 0.0005
+    },
+    {
+      "epoch": 7,
+      "train_loss": 0.009003604895511545,
+      "validation_loss": 0.036846086535012666,
+      "teacher_forcing_ratio": 0.6785714285714286,
+      "learning_rate": 0.0005
+    },
+    {
+      "epoch": 8,
+      "train_loss": 0.009073076781893053,
+      "validation_loss": 0.022880540421676726,
+      "teacher_forcing_ratio": 0.625,
+      "learning_rate": 0.0005
+    },
+    {
+      "epoch": 9,
+      "train_loss": 0.009206087313540248,
+      "validation_loss": 0.027212433884090902,
+      "teacher_forcing_ratio": 0.5714285714285714,
+      "learning_rate": 0.0005
+    },
+    {
+      "epoch": 10,
+      "train_loss": 0.008372893842330588,
+      "validation_loss": 0.027494986182333835,
+      "teacher_forcing_ratio": 0.5178571428571428,
+      "learning_rate": 0.0005
+    },
+    {
+      "epoch": 11,
+      "train_loss": 0.008829425363851598,
+      "validation_loss": 0.020629176853467455,
+      "teacher_forcing_ratio": 0.4642857142857143,
+      "learning_rate": 0.0005
+    },
+    {
+      "epoch": 12,
+      "train_loss": 0.009740417424292335,
+      "validation_loss": 0.022702240717551968,
+      "teacher_forcing_ratio": 0.4107142857142857,
+      "learning_rate": 0.0005
+    },
+    {
+      "epoch": 13,
+      "train_loss": 0.010364348496047475,
+      "validation_loss": 0.02014175445510293,
+      "teacher_forcing_ratio": 0.3571428571428572,
+      "learning_rate": 0.0005
+    },
+    {
+      "epoch": 14,
+      "train_loss": 0.010973382730083138,
+      "validation_loss": 0.020627406559574877,
+      "teacher_forcing_ratio": 0.3035714285714286,
+      "learning_rate": 0.0005
+    },
+    {
+      "epoch": 15,
+      "train_loss": 0.01229009795048804,
+      "validation_loss": 0.019179819685569505,
+      "teacher_forcing_ratio": 0.25,
+      "learning_rate": 0.0005
+    }
+  ]
+}

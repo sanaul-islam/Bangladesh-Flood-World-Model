@@ -1,0 +1,44 @@
+services:
+  flood-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    container_name: bangladesh-flood-world-model-api
+
+    ports:
+      - "8000:8000"
+
+    volumes:
+      - ./data/processed:/app/data/processed:ro
+      - ./outputs/predictions:/app/outputs/predictions:ro
+
+    env_file:
+      - .env
+
+    read_only: true
+
+    tmpfs:
+      - /tmp:size=256m,noexec,nosuid
+
+    restart: unless-stopped
+
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "curl",
+          "--fail",
+          "--silent",
+          "http://127.0.0.1:8000/health"
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+    security_opt:
+      - no-new-privileges:true
+
+    cap_drop:
+      - ALL

@@ -1,0 +1,105 @@
+# -------------------------
+# Python
+# -------------------------
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Python tooling
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+coverage.xml
+htmlcov/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# -------------------------
+# Secrets / local config
+# -------------------------
+.env
+.env.*
+!.env.example
+
+# -------------------------
+# IDE / OS
+# -------------------------
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# -------------------------
+# Logs / temporary files
+# -------------------------
+*.log
+*.tmp
+*.temp
+*.bak
+
+# -------------------------
+# Large raw / source data
+# -------------------------
+data/raw/
+data/cache/
+data/static/
+
+# -------------------------
+# Large processed artifacts
+# -------------------------
+data/processed/*.sqlite
+data/processed/*.db
+data/processed/*.gpkg
+data/processed/*.parquet
+data/processed/*.feather
+
+# -------------------------
+# Forecast / model artifacts
+# -------------------------
+outputs/predictions/*.nc
+outputs/predictions/*.nc4
+outputs/predictions/*.h5
+outputs/predictions/*.hdf5
+outputs/predictions/*.zarr
+
+# Model checkpoints
+checkpoints/
+*.pt
+*.pth
+*.ckpt
+*.safetensors
+
+# -------------------------
+# Generated route/output files
+# -------------------------
+outputs/routes/
+
+# -------------------------
+# Scratch / temporary archive data
+# -------------------------
+archive/scratch/
+archive/**/*.grib
+archive/**/*.grib2
+archive/**/*.nc
+archive/**/*.nc4
+
+
+# Historical scripts and scratch artifacts
+archive/
+
+# Large/raw/source data
+data/raw/
+data/static/
+
+# Generated/intermediate data
+data/interim/
+data/features/
+data/processed/

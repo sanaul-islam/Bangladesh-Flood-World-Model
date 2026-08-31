@@ -1,0 +1,33 @@
+{
+  "checkpoint": "checkpoints/world_model_v0_best.pt",
+  "best_validation_loss": 0.0008097875571003071,
+  "normalized": {
+    "model": {
+      "mae": 0.017551716417074203,
+      "rmse": 0.04367920011281967,
+      "bias": -0.005026321858167648,
+      "correlation": 0.9997786283493042
+    },
+    "persistence": {
+      "mae": 0.01947573572397232,
+      "rmse": 0.08441050350666046,
+      "bias": 6.6870411501440685e-06,
+      "correlation": 0.9991426467895508
+    },
+    "skill_vs_persistence": 0.48253832996774937
+  },
+  "physical_units_m3_s": {
+    "model": {
+      "mae": 70.05589294433594,
+      "rmse": 174.34107971191406,
+      "bias": -20.06205940246582,
+      "correlation": 0.9997775554656982
+    },
+    "persistence": {
+      "mae": 77.73540496826172,
+      "rmse": 336.91595458984375,
+      "bias": 0.02669079788029194,
+      "correlation": 0.999142050743103
+    }
+  }
+}

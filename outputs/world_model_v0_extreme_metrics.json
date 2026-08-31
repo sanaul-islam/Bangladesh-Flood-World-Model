@@ -1,0 +1,26 @@
+{
+  "all": {
+    "count": 307976,
+    "mae_normalized": 0.017551716417074203,
+    "rmse_normalized": 0.04367920011281967,
+    "bias_normalized": -0.005026321858167648
+  },
+  "top_10_percent": {
+    "count": 30798,
+    "mae_normalized": 0.07127498090267181,
+    "rmse_normalized": 0.1194695308804512,
+    "bias_normalized": -0.025594698265194893
+  },
+  "top_5_percent": {
+    "count": 15399,
+    "mae_normalized": 0.09471240639686584,
+    "rmse_normalized": 0.14868371188640594,
+    "bias_normalized": -0.029174888506531715
+  },
+  "top_1_percent": {
+    "count": 3080,
+    "mae_normalized": 0.12630316615104675,
+    "rmse_normalized": 0.18071255087852478,
+    "bias_normalized": -0.04696188494563103
+  }
+}

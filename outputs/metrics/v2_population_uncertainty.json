@@ -1,0 +1,80 @@
+{
+  "model": "Bangladesh Flood World Model V2-Population",
+  "method": "lead_specific_empirical_residual_quantiles",
+  "interval": "P10-P90",
+  "calibrated": false,
+  "source_forecast": "/run/media/sanaul/Course and project work/Weather-world-model-project/outputs/predictions/v2_vs_population_test.nc",
+  "output_forecast": "/run/media/sanaul/Course and project work/Weather-world-model-project/outputs/predictions/v2_population_uncertainty.nc",
+  "lead_metrics": [
+    {
+      "valid_values": 167862,
+      "coverage_10_90": 0.7999904683609155,
+      "mean_interval_width_m3_s": 137.87063598632812,
+      "mean_abs_error_m3_s": 70.48454284667969,
+      "lead_day": 1,
+      "residual_p10_m3_s": -94.79000854492185,
+      "residual_p50_m3_s": 0.015625,
+      "residual_p90_m3_s": 90.82296752929685
+    },
+    {
+      "valid_values": 167862,
+      "coverage_10_90": 0.7999964256353433,
+      "mean_interval_width_m3_s": 148.46099853515625,
+      "mean_abs_error_m3_s": 99.96275329589844,
+      "lead_day": 2,
+      "residual_p10_m3_s": -101.15433959960937,
+      "residual_p50_m3_s": 0.0546875,
+      "residual_p90_m3_s": 100.47815856933592
+    },
+    {
+      "valid_values": 167862,
+      "coverage_10_90": 0.7999904683609155,
+      "mean_interval_width_m3_s": 163.1134490966797,
+      "mean_abs_error_m3_s": 132.23529052734375,
+      "lead_day": 3,
+      "residual_p10_m3_s": -115.96606445312497,
+      "residual_p50_m3_s": 0.03125,
+      "residual_p90_m3_s": 109.48659667968741
+    },
+    {
+      "valid_values": 167862,
+      "coverage_10_90": 0.7999904683609155,
+      "mean_interval_width_m3_s": 175.3863983154297,
+      "mean_abs_error_m3_s": 162.72500610351562,
+      "lead_day": 4,
+      "residual_p10_m3_s": -129.7105773925781,
+      "residual_p50_m3_s": 0.015625,
+      "residual_p90_m3_s": 116.28256835937495
+    },
+    {
+      "valid_values": 167862,
+      "coverage_10_90": 0.7999904683609155,
+      "mean_interval_width_m3_s": 186.12767028808594,
+      "mean_abs_error_m3_s": 190.1309814453125,
+      "lead_day": 5,
+      "residual_p10_m3_s": -142.22592773437498,
+      "residual_p50_m3_s": 0.0,
+      "residual_p90_m3_s": 121.89829101562499
+    },
+    {
+      "valid_values": 167862,
+      "coverage_10_90": 0.7999904683609155,
+      "mean_interval_width_m3_s": 198.63255310058594,
+      "mean_abs_error_m3_s": 214.9527587890625,
+      "lead_day": 6,
+      "residual_p10_m3_s": -157.63411865234363,
+      "residual_p50_m3_s": -0.96380615234375,
+      "residual_p90_m3_s": 128.18586120605468
+    },
+    {
+      "valid_values": 167862,
+      "coverage_10_90": 0.7999904683609155,
+      "mean_interval_width_m3_s": 211.3258819580078,
+      "mean_abs_error_m3_s": 237.42478942871094,
+      "lead_day": 7,
+      "residual_p10_m3_s": -175.95328063964843,
+      "residual_p50_m3_s": -2.4450225830078125,
+      "residual_p90_m3_s": 133.6335449218749
+    }
+  ]
+}

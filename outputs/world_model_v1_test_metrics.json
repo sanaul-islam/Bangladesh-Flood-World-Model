@@ -1,0 +1,11 @@
+{
+  "checkpoint": "checkpoints/world_model_v1_best.pt",
+  "version": "v1",
+  "metrics": {
+    "mae": 0.03632066398859024,
+    "rmse": 0.06831446290016174,
+    "bias": 0.0015927513595670462,
+    "correlation": 0.9994583129882812
+  },
+  "valid_target_fraction": 0.10407407581806183
+}

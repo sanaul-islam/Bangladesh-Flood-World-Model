@@ -1,0 +1,125 @@
+{
+  "model": "Bangladesh Flood World Model V2-Population",
+  "task": "7-day multi-horizon discharge forecasting",
+  "dynamic_channels": 6,
+  "static_channels": 12,
+  "population_feature": true,
+  "population_transform": "log1p",
+  "history_length": 14,
+  "horizon": 7,
+  "hidden_channels": 16,
+  "batch_size": 1,
+  "epochs": 15,
+  "learning_rate": 0.0005,
+  "weight_decay": 0.0001,
+  "best_validation_loss": 0.015957897154312048,
+  "checkpoint": "/run/media/sanaul/Course and project work/Weather-world-model-project/checkpoints/world_model_v2_population_best.pt",
+  "normalization": "/run/media/sanaul/Course and project work/Weather-world-model-project/data/features/training_v3/v2_population_normalization.json",
+  "training_history": [
+    {
+      "epoch": 1,
+      "train_loss": 0.036290825279321356,
+      "validation_loss": 0.16644362992044606,
+      "teacher_forcing_ratio": 1.0,
+      "learning_rate": 0.0005
+    },
+    {
+      "epoch": 2,
+      "train_loss": 0.00832905471915012,
+      "validation_loss": 0.06202055030840002,
+      "teacher_forcing_ratio": 0.9464285714285714,
+      "learning_rate": 0.0005
+    },
+    {
+      "epoch": 3,
+      "train_loss": 0.007755006997511548,
+      "validation_loss": 0.05342196402274859,
+      "teacher_forcing_ratio": 0.8928571428571429,
+      "learning_rate": 0.0005
+    },
+    {
+      "epoch": 4,
+      "train_loss": 0.00760673821022936,
+      "validation_loss": 0.026471300825702235,
+      "teacher_forcing_ratio": 0.8392857142857143,
+      "learning_rate": 0.0005
+    },
+    {
+      "epoch": 5,
+      "train_loss": 0.008024932373237051,
+      "validation_loss": 0.11227239749440847,
+      "teacher_forcing_ratio": 0.7857142857142857,
+      "learning_rate": 0.0005
+    },
+    {
+      "epoch": 6,
+      "train_loss": 0.008118133210834447,
+      "validation_loss": 0.10397666089031724,
+      "teacher_forcing_ratio": 0.7321428571428572,
+      "learning_rate": 0.0005
+    },
+    {
+      "epoch": 7,
+      "train_loss": 0.008727148104621447,
+      "validation_loss": 0.034738492043445014,
+      "teacher_forcing_ratio": 0.6785714285714286,
+      "learning_rate": 0.00025
+    },
+    {
+      "epoch": 8,
+      "train_loss": 0.005342650633158189,
+      "validation_loss": 0.024479005932571664,
+      "teacher_forcing_ratio": 0.625,
+      "learning_rate": 0.00025
+    },
+    {
+      "epoch": 9,
+      "train_loss": 0.006165737937755158,
+      "validation_loss": 0.018945726244040666,
+      "teacher_forcing_ratio": 0.5714285714285714,
+      "learning_rate": 0.00025
+    },
+    {
+      "epoch": 10,
+      "train_loss": 0.006741419643894633,
+      "validation_loss": 0.023549957266332713,
+      "teacher_forcing_ratio": 0.5178571428571428,
+      "learning_rate": 0.00025
+    },
+    {
+      "epoch": 11,
+      "train_loss": 0.00715127576114698,
+      "validation_loss": 0.019630849714476293,
+      "teacher_forcing_ratio": 0.4642857142857143,
+      "learning_rate": 0.00025
+    },
+    {
+      "epoch": 12,
+      "train_loss": 0.007609545158885244,
+      "validation_loss": 0.023742610275529707,
+      "teacher_forcing_ratio": 0.4107142857142857,
+      "learning_rate": 0.000125
+    },
+    {
+      "epoch": 13,
+      "train_loss": 0.006843906069987814,
+      "validation_loss": 0.01834731760434616,
+      "teacher_forcing_ratio": 0.3571428571428572,
+      "learning_rate": 0.000125
+    },
+    {
+      "epoch": 14,
+      "train_loss": 0.0077822136794165435,
+      "validation_loss": 0.017574300481942112,
+      "teacher_forcing_ratio": 0.3035714285714286,
+      "learning_rate": 0.000125
+    },
+    {
+      "epoch": 15,
+      "train_loss": 0.008473966462305868,
+      "validation_loss": 0.015957897154312048,
+      "teacher_forcing_ratio": 0.25,
+      "learning_rate": 0.000125
+    }
+  ]
+}

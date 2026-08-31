@@ -1,0 +1,176 @@
+{
+  "model": "Bangladesh Flood World Model V2",
+  "checkpoint": "/run/media/sanaul/Course and project work/Weather-world-model-project/checkpoints/world_model_v2_best.pt",
+  "normalization": "/run/media/sanaul/Course and project work/Weather-world-model-project/data/features/training_v3/v2_normalization.json",
+  "dynamic_dataset": "/run/media/sanaul/Course and project work/Weather-world-model-project/data/features/dynamic_core_v2.zarr",
+  "static_dataset": "/run/media/sanaul/Course and project work/Weather-world-model-project/data/features/static_v3.zarr",
+  "history_length": 14,
+  "forecast_horizon": 7,
+  "test_start_index": 3544,
+  "test_end_index": 4170,
+  "test_sample_count": 606,
+  "test_start_date": "2024-09-14T00:00:00.000000000",
+  "test_end_date": "2026-06-01T00:00:00.000000000",
+  "parameter_count": 47617,
+  "evaluation_mask": "glofas_discharge_valid_t \u00d7 river_mask",
+  "future_forcing": "observed precipitation from held-out period",
+  "lead_metrics": [
+    {
+      "lead_day": 1,
+      "v2": {
+        "valid_cells": 167862,
+        "valid_fraction": 0.1025925925925926,
+        "mae_m3_s": 107.5056803977908,
+        "rmse_m3_s": 242.87546841223255,
+        "bias_m3_s": 5.886562647066577,
+        "correlation": 0.9994920134056454
+      },
+      "persistence": {
+        "valid_cells": 167862,
+        "valid_fraction": 0.1025925925925926,
+        "mae_m3_s": 64.92329408847179,
+        "rmse_m3_s": 276.88368887760714,
+        "bias_m3_s": 6.214268544320446,
+        "correlation": 0.9992882232383916
+      },
+      "skill_vs_persistence": 0.12282493274787121
+    },
+    {
+      "lead_day": 2,
+      "v2": {
+        "valid_cells": 167862,
+        "valid_fraction": 0.1025925925925926,
+        "mae_m3_s": 127.12942390647785,
+        "rmse_m3_s": 354.90263884630934,
+        "bias_m3_s": -2.383821758333849,
+        "correlation": 0.9988482598058093
+      },
+      "persistence": {
+        "valid_cells": 167862,
+        "valid_fraction": 0.1025925925925926,
+        "mae_m3_s": 125.0936783565393,
+        "rmse_m3_s": 531.8730110757418,
+        "bias_m3_s": 12.362801401434847,
+        "correlation": 0.9973657263141161
+      },
+      "skill_vs_persistence": 0.3327304987171663
+    },
+    {
+      "lead_day": 3,
+      "v2": {
+        "valid_cells": 167862,
+        "valid_fraction": 0.1025925925925926,
+        "mae_m3_s": 154.29244387354478,
+        "rmse_m3_s": 513.4209613123916,
+        "bias_m3_s": -5.858801625426038,
+        "correlation": 0.9975375256159206
+      },
+      "persistence": {
+        "valid_cells": 167862,
+        "valid_fraction": 0.1025925925925926,
+        "mae_m3_s": 179.60894328731393,
+        "rmse_m3_s": 761.5519552274851,
+        "bias_m3_s": 18.3605856270447,
+        "correlation": 0.9945851827087019
+      },
+      "skill_vs_persistence": 0.3258228046187258
+    },
+    {
+      "lead_day": 4,
+      "v2": {
+        "valid_cells": 167862,
+        "valid_fraction": 0.1025925925925926,
+        "mae_m3_s": 184.43249439089016,
+        "rmse_m3_s": 684.5939405201528,
+        "bias_m3_s": -6.599681247167095,
+        "correlation": 0.9955754116245882
+      },
+      "persistence": {
+        "valid_cells": 167862,
+        "valid_fraction": 0.1025925925925926,
+        "mae_m3_s": 228.6299346035,
+        "rmse_m3_s": 964.8667408248145,
+        "bias_m3_s": 24.2131282964882,
+        "correlation": 0.9912878712187174
+      },
+      "skill_vs_persistence": 0.2904782478718989
+    },
+    {
+      "lead_day": 5,
+      "v2": {
+        "valid_cells": 167862,
+        "valid_fraction": 0.1025925925925926,
+        "mae_m3_s": 214.66247863075048,
+        "rmse_m3_s": 847.6826349747254,
+        "bias_m3_s": -5.7020692103678705,
+        "correlation": 0.9931668687229469
+      },
+      "persistence": {
+        "valid_cells": 167862,
+        "valid_fraction": 0.1025925925925926,
+        "mae_m3_s": 272.20389270938136,
+        "rmse_m3_s": 1142.8376444290018,
+        "bias_m3_s": 30.036515263591532,
+        "correlation": 0.9877522297442117
+      },
+      "skill_vs_persistence": 0.25826503956451774
+    },
+    {
+      "lead_day": 6,
+      "v2": {
+        "valid_cells": 167862,
+        "valid_fraction": 0.1025925925925926,
+        "mae_m3_s": 244.26615389017977,
+        "rmse_m3_s": 994.9360120712779,
+        "bias_m3_s": -3.548215564457308,
+        "correlation": 0.9905302676386228
+      },
+      "persistence": {
+        "valid_cells": 167862,
+        "valid_fraction": 0.1025925925925926,
+        "mae_m3_s": 311.12758081488903,
+        "rmse_m3_s": 1297.8609762105652,
+        "bias_m3_s": 36.00018836398878,
+        "correlation": 0.9841745135863486
+      },
+      "skill_vs_persistence": 0.23340324556467806
+    },
+    {
+      "lead_day": 7,
+      "v2": {
+        "valid_cells": 167862,
+        "valid_fraction": 0.1025925925925926,
+        "mae_m3_s": 272.23392265701517,
+        "rmse_m3_s": 1125.2599666803549,
+        "bias_m3_s": -0.34908389269100487,
+        "correlation": 0.9878224815859504
+      },
+      "persistence": {
+        "valid_cells": 167862,
+        "valid_fraction": 0.1025925925925926,
+        "mae_m3_s": 345.75465176586164,
+        "rmse_m3_s": 1433.594727953018,
+        "bias_m3_s": 42.15525597445759,
+        "correlation": 0.9806580138679382
+      },
+      "skill_vs_persistence": 0.2150780518793649
+    }
+  ],
+  "pooled_v2_metrics": {
+    "valid_cells": 1175034,
+    "valid_fraction": 0.1025925925925926,
+    "mae_m3_s": 177.75681097946637,
+    "rmse_m3_s": 744.982212036921,
+    "bias_m3_s": 5.952830034143975,
+    "correlation": 0.9947630088959837
+  },
+  "pooled_persistence_metrics": {
+    "valid_cells": 1175034,
+    "valid_fraction": 0.1025925925925926,
+    "mae_m3_s": 218.19171080370816,
+    "rmse_m3_s": 993.9960853793938,
+    "bias_m3_s": 24.191820495903727,
+    "correlation": 0.9907494044962191
+  },
+  "pooled_skill_vs_persistence": 0.25051796179602437
+}

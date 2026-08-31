@@ -1,0 +1,8 @@
+{
+  "finite_values": 1175034,
+  "mean_exposure_index": 0.3362717628479004,
+  "median_exposure_index": 0.3261594772338867,
+  "max_exposure_index": 0.9968767762184143,
+  "high_exposure_fraction": 0.019540711162400408,
+  "output": "/run/media/sanaul/Course and project work/Weather-world-model-project/outputs/predictions/v2_population_population_risk.nc"
+}

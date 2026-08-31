@@ -1,0 +1,8 @@
+{
+  "finite_values": 1175034,
+  "min": 0.19916263222694397,
+  "mean": 0.4238201975822449,
+  "median": 0.423511803150177,
+  "max": 0.9989718198776245,
+  "output": "/run/media/sanaul/Course and project work/Weather-world-model-project/outputs/predictions/v2_population_hydrological_hazard.nc"
+}

@@ -1,0 +1,16 @@
+{
+  "forecast_sample": 0,
+  "forecast_day": 1,
+  "processed_edges": 4304762,
+  "mapped_edges": 4304762,
+  "mapping_rate": 1.0,
+  "risk_records": 4304762,
+  "mean_flood_risk": 0.4297833908281247,
+  "max_flood_risk": 0.48761260509490967,
+  "mean_uncertainty_risk": 0.87500002903761,
+  "max_uncertainty_risk": 1.0,
+  "mean_total_risk": 0.348370346870802,
+  "max_total_risk": 0.5308122634887695,
+  "bridge_associated_edges": 36252,
+  "risk_formula": "travel_time \u00d7 (1 + 2\u00d7flood_risk + 2\u00d7bridge_risk + 1\u00d7uncertainty_risk)"
+}

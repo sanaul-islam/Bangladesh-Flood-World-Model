@@ -1,0 +1,15 @@
+{
+  "source": "OSM",
+  "source_path": "/run/media/sanaul/Course and project work/Weather-world-model-project/data/static/roads/roads.shp",
+  "database": "/run/media/sanaul/Course and project work/Weather-world-model-project/data/processed/road_network.sqlite",
+  "output_crs": "EPSG:32646",
+  "coordinate_precision_m": 1.0,
+  "chunk_size": 5000,
+  "road_features": 317059,
+  "nodes": 4281503,
+  "edges": 4304762,
+  "total_road_length_km": 149531.01187929395,
+  "mean_segment_length_m": 34.736185619389396,
+  "database_size_mb": 750.421875,
+  "networkx_global_graph": false
+}

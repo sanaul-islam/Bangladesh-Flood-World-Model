@@ -1,0 +1,26 @@
+{
+  "database": {
+    "counts": {
+      "nodes": 4281503,
+      "edges": 4304762,
+      "bridges": 25500,
+      "bridge_node_map": 19861,
+      "bridge_edge_map": 37490,
+      "road_risk": 4304762,
+      "road_edge_state": 4304762,
+      "shelters": 281,
+      "shelter_node_map": 274
+    },
+    "road_risk_records": 4304762,
+    "nonzero_road_risk_records": 4304762
+  },
+  "forecasts": {
+    "hazard_shape": [
+      606,
+      7,
+      60,
+      45
+    ],
+    "population_risk": "valid"
+  }
+}
