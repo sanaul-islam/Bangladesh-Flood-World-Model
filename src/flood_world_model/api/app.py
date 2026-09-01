@@ -130,7 +130,7 @@ app = FastAPI(
         "risk-aware evacuation decision "
         "support for Bangladesh."
     ),
-    version="0.1.0",
+    version="0.1.1",
     lifespan=lifespan,
 )
 
@@ -174,7 +174,7 @@ def health(
         "service": (
             "bangladesh-flood-world-model"
         ),
-        "version": "0.1.0",
+        "version": "0.1.1",
     }
 
 
