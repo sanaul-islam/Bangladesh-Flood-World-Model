@@ -6,11 +6,11 @@ A geospatial AI and disaster-response decision-support system for Bangladesh tha
 
 > **Forecast → Hazard → Exposure → Infrastructure Risk → Routing → Evacuation**
 
-Built with PyTorch, Xarray, GeoPandas, OSM/OSMnx, SQLite, FastAPI, Prometheus, Docker, and automated testing.
+Built with PyTorch, Xarray, GeoPandas, OSM/OSMnx, SQLite, FastAPI, Prometheus, Docker, GitHub Actions, GitHub Container Registry, and AWS EC2.
 
 ---
 
-## Why This Project?
+# Why This Project?
 
 Flood prediction by itself is not an evacuation system.
 
@@ -22,13 +22,13 @@ This project therefore combines environmental forecasting with infrastructure-aw
 
 The system takes a forecasted hydrological state and propagates it into:
 
-1. flood hazard,
-2. population exposure,
-3. road-level risk,
-4. bridge exposure,
-5. risk-aware routing,
-6. shelter ranking,
-7. an automatic evacuation recommendation.
+1. Flood hazard
+2. Population exposure
+3. Road-level risk
+4. Bridge exposure
+5. Risk-aware routing
+6. Shelter ranking
+7. Automatic evacuation recommendation
 
 The result is an end-to-end research and engineering pipeline rather than an isolated prediction model.
 
@@ -38,6 +38,7 @@ The result is an end-to-end research and engineering pipeline rather than an iso
 
 ```text
                          DATA SOURCES
+
                               │
              ┌────────────────┼────────────────┐
              │                │                │
@@ -88,7 +89,7 @@ The result is an end-to-end research and engineering pipeline rather than an iso
                 ┌─────────────┼─────────────┐
                 ▼             ▼             ▼
              Client        Monitoring     Docker
-````
+```
 
 ---
 
@@ -232,7 +233,7 @@ Indexed SQLite storage
         ↓
 Local/network queries
         ↓
-A* expansion
+A*
 ```
 
 rather than:
@@ -271,8 +272,11 @@ Current conceptual risk formulation:
 
 ```text
 risk_cost =
+
     travel_time
+
     ×
+
     (
         1
         + 2 × flood_risk
@@ -317,12 +321,12 @@ The project implements a **SQLite-backed A*** routing engine.
 
 The router:
 
-* snaps arbitrary geographic coordinates to nearby road nodes,
-* searches the relevant road network,
-* uses risk-aware edge costs,
-* reconstructs the route,
-* converts network nodes into geographic coordinates,
-* returns route statistics.
+* snaps arbitrary geographic coordinates to nearby road nodes
+* searches the relevant road network
+* uses risk-aware edge costs
+* reconstructs the route
+* converts network nodes into geographic coordinates
+* returns route statistics
 
 ### Example validated route
 
@@ -528,7 +532,7 @@ Exposes Prometheus-compatible metrics.
 
 # API Documentation
 
-When the service is running:
+When the service is running locally:
 
 ```text
 http://127.0.0.1:8000/docs
@@ -540,6 +544,8 @@ OpenAPI specification:
 http://127.0.0.1:8000/openapi.json
 ```
 
+The same API is deployed on AWS EC2 for cloud validation.
+
 ---
 
 # Production-Oriented Backend Design
@@ -548,14 +554,23 @@ The backend is designed around reusable initialized resources rather than recrea
 
 ```text
 FastAPI startup
+
       ↓
+
 Initialize forecast artifact
+
 Initialize SQLite-backed planning service
+
       ↓
+
 Reuse service across requests
+
       ↓
+
 FastAPI shutdown
+
       ↓
+
 Close resources cleanly
 ```
 
@@ -569,7 +584,7 @@ The scientific road database is consumed as a **read-only artifact** by the serv
 
 The API contains application-level observability for production-style operation.
 
-### Structured logs
+## Structured logs
 
 Logs are emitted as structured JSON records.
 
@@ -583,13 +598,13 @@ message
 request_id
 ```
 
-### Request IDs
+## Request IDs
 
 Each HTTP request receives an `X-Request-ID`.
 
 Client-supplied request IDs can also be propagated.
 
-### Prometheus metrics
+## Prometheus metrics
 
 The service tracks:
 
@@ -609,19 +624,37 @@ This allows the model-serving layer to be monitored independently from offline m
 
 The backend is containerized using Docker and Docker Compose.
 
-The container:
+The production container:
 
-* runs as a non-root user,
-* mounts large artifacts at runtime,
-* treats scientific artifacts as read-only,
-* uses environment-based configuration,
-* performs a healthcheck,
-* limits expensive planning concurrency,
-* drops Linux capabilities,
-* enables `no-new-privileges`,
-* exposes Prometheus metrics.
+* runs as a non-root user
+* mounts large artifacts at runtime
+* treats scientific artifacts as read-only
+* uses environment-based configuration
+* performs a healthcheck
+* limits expensive planning concurrency
+* drops Linux capabilities
+* enables `no-new-privileges`
+* exposes Prometheus metrics
 
 The large national road database and forecast artifacts are intentionally **not baked into the Docker image**.
+
+## Production image optimization
+
+The original production image contained the full research/training environment and reached approximately:
+
+```text
+18.8 GB
+```
+
+The production dependency tree was separated from the research/training dependency tree, removing unnecessary packages such as the training PyTorch stack from the serving image.
+
+The resulting production image is approximately:
+
+```text
+~693 MB
+```
+
+This reduces deployment size by roughly **96%** while retaining the dependencies required by the API and routing stack.
 
 ---
 
@@ -658,10 +691,163 @@ The integration tests validate the complete chain from API request through routi
 
 ---
 
+# CI/CD
+
+The project implements automated CI/CD using **GitHub Actions, GitHub Container Registry, Docker, and AWS EC2**.
+
+## Continuous Integration
+
+The CI pipeline validates changes before deployment.
+
+```text
+git push
+   ↓
+GitHub Actions
+   ↓
+Dependency installation
+   ↓
+Automated tests
+   ↓
+Docker validation
+```
+
+## Container Registry
+
+Production container images are published to:
+
+```text
+ghcr.io/sanaul-islam/bangladesh-flood-world-model
+```
+
+Current deployed container release:
+
+```text
+v0.1.1
+```
+
+## Continuous Deployment
+
+A self-hosted GitHub Actions runner operates directly on the AWS EC2 instance.
+
+```text
+git push
+   ↓
+GitHub Actions
+   ↓
+CD job
+   ↓
+Self-hosted runner on AWS EC2
+   ↓
+docker compose pull
+   ↓
+docker compose up -d
+   ↓
+health check
+   ↓
+deployment complete
+```
+
+The deployment process automatically verifies the application health after updating the service.
+
+The EC2 runner is installed as a persistent service so it can resume after a machine restart.
+
+---
+
+# AWS Cloud Deployment
+
+The production API has been deployed and validated on **Amazon EC2**.
+
+## Current deployment
+
+| Component         | Configuration              |
+| ----------------- | -------------------------- |
+| Cloud             | **AWS EC2**                |
+| Region            | **eu-north-1 (Stockholm)** |
+| Instance          | **t3.small**               |
+| Architecture      | **x86_64**                 |
+| Memory            | **2 GiB**                  |
+| Root storage      | **20 GiB**                 |
+| Operating system  | **Ubuntu 26.04 LTS**       |
+| Container runtime | **Docker**                 |
+| Container image   | **GHCR `v0.1.1`**          |
+| Image size        | **~693 MB**                |
+
+## Runtime artifacts
+
+Large scientific artifacts are stored separately from the Docker image and mounted into the production container:
+
+```text
+/data/flood-world-model/
+├── processed/
+│   └── road_network.sqlite
+└── predictions/
+    └── v2_population_population_risk.nc
+```
+
+The serving container consumes these artifacts as read-only inputs.
+
+## Cloud validation
+
+The deployed API has been validated using the actual production artifacts.
+
+Verified successfully:
+
+```text
+FastAPI startup
+       ↓
+SQLite road database
+       ↓
+Forecast-risk NetCDF
+       ↓
+Risk-aware routing
+       ↓
+Shelter ranking
+       ↓
+Evacuation recommendation
+```
+
+A complete evacuation request was successfully executed on the 2 GiB EC2 instance.
+
+Observed resource usage during the validated request:
+
+```text
+Container memory:       ~493 MiB
+EC2 available RAM:      ~959 MiB
+Swap configured:        2 GiB
+Swap used during test:  negligible
+```
+
+This demonstrates that the current CPU-only serving architecture can operate on a resource-constrained cloud instance.
+
+---
+
+# Production Security & Runtime Controls
+
+The production container includes several hardening measures:
+
+```text
+Non-root container user
+Read-only root filesystem
+Read-only scientific artifacts
+No-new-privileges
+Linux capability dropping
+Temporary writable /tmp
+Bounded planning concurrency
+Container healthcheck
+Automatic container restart
+```
+
+The SQLite and forecast artifacts are intentionally separated from the container image.
+
+The current deployment keeps FastAPI on the application port internally; a future reverse-proxy/HTTPS layer is planned for public production access.
+
+---
+
 # Repository Structure
 
 ```text
 Bangladesh-Flood-World-Model/
+
 │
 ├── src/
 │   └── flood_world_model/
@@ -704,6 +890,7 @@ Bangladesh-Flood-World-Model/
 │
 ├── Dockerfile
 ├── docker-compose.yml
+├── docker-compose.prod.yml
 ├── .dockerignore
 ├── .env.example
 ├── .gitignore
@@ -719,7 +906,7 @@ Large generated datasets and runtime artifacts are intentionally excluded from G
 
 # Technology Stack
 
-### Machine Learning
+## Machine Learning
 
 * Python 3.11+
 * PyTorch
@@ -728,7 +915,7 @@ Large generated datasets and runtime artifacts are intentionally excluded from G
 * Xarray
 * Dask
 
-### Geospatial
+## Geospatial
 
 * GeoPandas
 * Shapely
@@ -739,40 +926,42 @@ Large generated datasets and runtime artifacts are intentionally excluded from G
 * Cartopy
 * Rioxarray
 
-### Storage
+## Storage
 
 * SQLite
 * NetCDF / HDF5
 * Zarr
 * Pandas
 
-### Backend
+## Backend
 
 * FastAPI
 * Pydantic
 * Uvicorn
 
-### Observability
+## Observability
 
 * Prometheus Client
 * Structured JSON logging
 
-### Testing
+## Testing
 
 * pytest
 * FastAPI TestClient
 * Docker smoke tests
 
-### Tooling
+## Tooling
 
 * uv
 * Hatchling
 
-### Deployment
+## Deployment
 
 * Docker
 * Docker Compose
 * GitHub Actions
+* GitHub Container Registry
+* AWS EC2
 
 ---
 
@@ -826,7 +1015,9 @@ http://127.0.0.1:8000/docs
 
 ```bash
 cp .env.example .env
+
 docker compose build
+
 docker compose up
 ```
 
@@ -838,11 +1029,42 @@ curl http://127.0.0.1:8000/health
 
 ---
 
+# Production Deployment
+
+The production API uses:
+
+```text
+docker-compose.prod.yml
+```
+
+The production deployment expects the large runtime artifacts to be present outside the Docker image.
+
+Example:
+
+```text
+/data/flood-world-model/processed/road_network.sqlite
+/data/flood-world-model/predictions/v2_population_population_risk.nc
+```
+
+The production image can be pulled from GHCR:
+
+```bash
+docker pull ghcr.io/sanaul-islam/bangladesh-flood-world-model:v0.1.1
+```
+
+The current AWS deployment uses:
+
+```bash
+docker compose -f docker-compose.prod.yml up -d
+```
+
+---
+
 # Data & Artifact Strategy
 
 The project deliberately separates **code** from **large scientific artifacts**.
 
-### Stored in Git
+## Stored in Git
 
 * application source code
 * training/evaluation scripts
@@ -850,10 +1072,10 @@ The project deliberately separates **code** from **large scientific artifacts**.
 * configuration
 * documentation
 * Docker configuration
-* CI configuration
+* CI/CD configuration
 * small evaluation metrics
 
-### Stored outside normal Git history
+## Stored outside normal Git history
 
 Examples:
 
@@ -863,14 +1085,19 @@ data/static/
 data/interim/
 data/features/
 data/processed/
+
 outputs/predictions/
+
 model checkpoints
+
 large raster/vector datasets
 ```
 
-The national road SQLite database is approximately 1 GB and is therefore not included in the Git repository.
+The national road SQLite database is approximately **1.6 GB** and is therefore not included in the Git repository.
 
 The same principle applies to large NetCDF, Zarr, GRIB, PBF, TIFF, and other generated/source artifacts.
+
+Production serving artifacts are mounted separately from the container image.
 
 ---
 
@@ -924,6 +1151,10 @@ Validated forecasting and road-network artifacts are treated as immutable servin
 
 The evacuation endpoint returns the factors behind the recommendation rather than only returning a destination identifier.
 
+## 6. Resource-aware deployment
+
+The serving architecture is designed to operate without a GPU and has been validated on a 2 GiB AWS EC2 instance.
+
 ---
 
 # Current Limitations
@@ -932,13 +1163,15 @@ This project is a research and engineering prototype and **not an operational em
 
 Current limitations include:
 
-* approximately 0.1° forecast spatial resolution,
-* no validated live shelter occupancy/capacity feed,
-* no live road-closure feed,
-* forecast artifacts are not yet continuously refreshed in production,
-* route risk depends on the currently generated forecast artifact,
-* candidate-shelter evaluation is configurable rather than exhaustive for every request,
-* operational deployment requires authoritative, real-time government and emergency-management data.
+* approximately 0.1° forecast spatial resolution
+* no validated live shelter occupancy/capacity feed
+* no live road-closure feed
+* forecast artifacts are not yet continuously refreshed in production
+* route risk depends on the currently generated forecast artifact
+* candidate-shelter evaluation is configurable rather than exhaustive for every request
+* no production HTTPS/domain layer yet
+* current application version is `0.1.0` while the deployed container image is `v0.1.1`
+* operational deployment requires authoritative, real-time government and emergency-management data
 
 These limitations are explicitly represented in the system instead of being hidden.
 
@@ -971,21 +1204,31 @@ These limitations are explicitly represented in the system instead of being hidd
 * [x] Prometheus metrics
 * [x] Docker
 * [x] Docker healthchecks
+* [x] Production dependency separation
+* [x] Production Docker image optimization
 * [x] Integration testing
+* [x] GitHub Actions CI
+* [x] GitHub Container Registry publishing
+* [x] AWS EC2 deployment
+* [x] Self-hosted GitHub Actions runner
+* [x] Automated EC2 deployment
+* [x] Cloud validation on a 2 GiB instance
 
 ## Next
 
-* [ ] GitHub Actions CI/CD
-* [ ] GitHub Container Registry publishing
-* [ ] Cloud deployment
+* [ ] Version-aligned API/Container releases
+* [ ] Immutable image deployment by commit SHA
 * [ ] Automated forecast/artifact refresh
 * [ ] Live FFWC data integration
 * [ ] Live road-status integration
 * [ ] Live shelter availability
 * [ ] Interactive map dashboard
+* [ ] HTTPS/domain deployment
 * [ ] API authentication and rate limiting
 * [ ] Production monitoring dashboards
 * [ ] Model/data drift monitoring
+* [ ] Automated data/model versioning
+* [ ] Multi-region/cloud deployment
 
 ---
 
@@ -993,21 +1236,21 @@ These limitations are explicitly represented in the system instead of being hidd
 
 This system is intended for:
 
-* research,
-* engineering evaluation,
-* disaster-response prototyping,
-* decision-support experimentation.
+* research
+* engineering evaluation
+* disaster-response prototyping
+* decision-support experimentation
 
 It should **not be used as the sole source of emergency instructions**.
 
 Operational decisions should incorporate:
 
-* official government warnings,
-* current flood observations,
-* verified road conditions,
-* confirmed shelter availability,
-* emergency-management coordination,
-* human judgment.
+* official government warnings
+* current flood observations
+* verified road conditions
+* confirmed shelter availability
+* emergency-management coordination
+* human judgment
 
 ---
 
@@ -1035,4 +1278,3 @@ See the [LICENSE](LICENSE) file for details.
 
 Computer Science & Engineering
 BRAC University, Bangladesh
-
