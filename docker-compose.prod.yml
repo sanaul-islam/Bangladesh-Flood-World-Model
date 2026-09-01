@@ -7,7 +7,7 @@ services:
     restart: unless-stopped
 
     ports:
-      - "8000:8000"
+      - "127.0.0.1:8000:8000"
 
     environment:
       FLOOD_API_HOST: "0.0.0.0"
@@ -22,17 +22,20 @@ services:
       FLOOD_MAX_ROUTE_EXPANDED_NODES: "100000"
       FLOOD_MAX_CONCURRENT_PLANNING_REQUESTS: "1"
 
-      FLOOD_ALLOWED_ORIGINS: "https://your-frontend-domain.example"
+      FLOOD_ALLOWED_ORIGINS: "http://localhost:3000"
 
     volumes:
       - /data/flood-world-model/processed:/app/data/processed:ro
       - /data/flood-world-model/predictions:/app/outputs/predictions:ro
 
+    # Root filesystem is read-only.
     read_only: true
 
+    # Temporary writable space for the application.
     tmpfs:
       - /tmp:size=256m,noexec,nosuid
 
+    # Security hardening.
     security_opt:
       - no-new-privileges:true
 
