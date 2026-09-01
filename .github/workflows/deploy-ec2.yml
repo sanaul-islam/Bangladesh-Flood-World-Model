@@ -1,0 +1,71 @@
+name: CD - Deploy to AWS EC2
+
+on:
+  workflow_dispatch:
+
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+concurrency:
+  group: production-deployment
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    name: Deploy to EC2
+    runs-on:
+      - self-hosted
+      - Linux
+      - X64
+      - production
+
+    steps:
+      - name: Verify runner
+        run: |
+          set -euo pipefail
+
+          echo "Runner: $RUNNER_NAME"
+          echo "OS: $RUNNER_OS"
+          echo "Architecture: $RUNNER_ARCH"
+
+          docker --version
+          docker compose version
+
+      - name: Deploy application
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          cd /home/ubuntu
+
+          echo "Pulling production image..."
+          docker compose \
+            -f /home/ubuntu/docker-compose.prod.yml \
+            pull
+
+          echo "Starting updated application..."
+          docker compose \
+            -f /home/ubuntu/docker-compose.prod.yml \
+            up -d
+
+          echo "Waiting for application startup..."
+          sleep 15
+
+          echo "Container status:"
+          docker compose \
+            -f /home/ubuntu/docker-compose.prod.yml \
+            ps
+
+          echo "Running health check..."
+          curl \
+            --fail \
+            --silent \
+            --show-error \
+            http://127.0.0.1:8000/health
+
+          echo
+          echo "Deployment successful."
