@@ -1,0 +1,54 @@
+services:
+  flood-api:
+    image: ghcr.io/sanaul-islam/bangladesh-flood-world-model:v0.1.1
+
+    container_name: bangladesh-flood-world-model-api
+
+    restart: unless-stopped
+
+    ports:
+      - "8000:8000"
+
+    environment:
+      FLOOD_API_HOST: "0.0.0.0"
+      FLOOD_API_PORT: "8000"
+      FLOOD_API_LOG_LEVEL: "INFO"
+
+      FLOOD_DATABASE_PATH: "/app/data/processed/road_network.sqlite"
+      FLOOD_POPULATION_RISK_PATH: "/app/outputs/predictions/v2_population_population_risk.nc"
+
+      FLOOD_MAX_CANDIDATE_SHELTERS: "24"
+      FLOOD_MAX_ROUTE_DISTANCE_KM: "30"
+      FLOOD_MAX_ROUTE_EXPANDED_NODES: "100000"
+      FLOOD_MAX_CONCURRENT_PLANNING_REQUESTS: "1"
+
+      FLOOD_ALLOWED_ORIGINS: "https://your-frontend-domain.example"
+
+    volumes:
+      - /data/flood-world-model/processed:/app/data/processed:ro
+      - /data/flood-world-model/predictions:/app/outputs/predictions:ro
+
+    read_only: true
+
+    tmpfs:
+      - /tmp:size=256m,noexec,nosuid
+
+    security_opt:
+      - no-new-privileges:true
+
+    cap_drop:
+      - ALL
+
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "curl",
+          "--fail",
+          "--silent",
+          "http://127.0.0.1:8000/health"
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 90s
