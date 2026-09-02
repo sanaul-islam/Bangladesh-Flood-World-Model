@@ -667,13 +667,6 @@ export function MapView({
     setMapReady,
   ] = useState(false);
 
-  const [
-    clickedLocation,
-    setClickedLocation,
-  ] = useState<Coordinate | null>(
-    null,
-  );
-
   const locationRecord =
     asRecord(
       selectedLocation,
@@ -694,11 +687,9 @@ export function MapView({
     90.4125;
 
   const displayLongitude =
-    clickedLocation?.[0] ??
     baseLongitude;
 
   const displayLatitude =
-    clickedLocation?.[1] ??
     baseLatitude;
 
   const effectiveRiskGrid =
@@ -1003,11 +994,6 @@ export function MapView({
         const nextLatitude =
           event.lngLat.lat;
 
-        setClickedLocation([
-          nextLongitude,
-          nextLatitude,
-        ]);
-
         onMapClick(
           nextLatitude,
           nextLongitude,
@@ -1078,6 +1064,52 @@ export function MapView({
     mapReady,
     displayLongitude,
     displayLatitude,
+  ]);
+
+  /* ---------------------------------------------------------------------- */
+  /* Move map when selected coordinates change                               */
+  /* ---------------------------------------------------------------------- */
+
+  useEffect(() => {
+    if (
+      !mapReady ||
+      !mapRef.current ||
+      !Number.isFinite(displayLatitude) ||
+      !Number.isFinite(displayLongitude)
+    ) {
+      return;
+    }
+
+    const map = mapRef.current;
+
+    const currentCenter = map.getCenter();
+
+    const locationChanged =
+      Math.abs(
+        currentCenter.lat -
+          displayLatitude,
+      ) > 0.00001 ||
+      Math.abs(
+        currentCenter.lng -
+          displayLongitude,
+      ) > 0.00001;
+
+    if (!locationChanged) {
+      return;
+    }
+
+    map.flyTo({
+      center: [
+        displayLongitude,
+        displayLatitude,
+      ],
+      zoom: 13,
+      duration: 800,
+    });
+  }, [
+    mapReady,
+    displayLatitude,
+    displayLongitude,
   ]);
 
   /* ---------------------------------------------------------------------- */
