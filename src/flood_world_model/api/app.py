@@ -149,7 +149,13 @@ allowed_origins = [
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=allowed_origins,
+    allow_origins=[
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+        "https://bangladesh-flood-world-model.vercel.app",
+        "https://bangladesh-flood-world-model-git-main-my-team-29f2.vercel.app",
+    ],
+    allow_origin_regex=r"^https://bangladesh-flood-world-model(?:-[a-z0-9-]+)?\.vercel\.app$",
     allow_credentials=False,
     allow_methods=["GET", "POST", "OPTIONS"],
     allow_headers=["Accept", "Content-Type"],
