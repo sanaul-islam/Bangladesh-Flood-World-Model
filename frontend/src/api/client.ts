@@ -92,7 +92,7 @@ async function request<T>(
 
 export async function getHealth(): Promise<HealthResponse> {
   return request<HealthResponse>(
-    "/health",
+    "/api/health",
   );
 }
 
