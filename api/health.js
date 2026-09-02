@@ -15,7 +15,7 @@ export default async function handler(req, res) {
     const contentType =
       response.headers.get(
         "content-type",
-      ) || "";
+      );
 
     res.status(response.status);
 
@@ -40,7 +40,7 @@ export default async function handler(req, res) {
 
     res.status(502).json({
       detail:
-        "Unable to reach flood-world-model API.",
+        "Flood World Model API is unreachable.",
     });
   }
 }

@@ -1,20 +1,25 @@
 export default async function handler(req, res) {
   const backendBase = "http://13.61.8.80:8000";
 
-  const pathParts = Array.isArray(req.query.path)
-    ? req.query.path
-    : [req.query.path].filter(Boolean);
+  const pathValue = req.query.path;
 
-  const apiPath = `/${pathParts.join("/")}`;
+  const parts = Array.isArray(pathValue)
+    ? pathValue
+    : pathValue
+      ? [pathValue]
+      : [];
 
-  const queryIndex = req.url.indexOf("?");
+  const path = `/${parts.join("/")}`;
+
+  const questionMark = req.url.indexOf("?");
+
   const queryString =
-    queryIndex >= 0
-      ? req.url.slice(queryIndex)
+    questionMark >= 0
+      ? req.url.slice(questionMark)
       : "";
 
   const targetUrl =
-    `${backendBase}${apiPath}${queryString}`;
+    `${backendBase}${path}${queryString}`;
 
   try {
     const headers = {
@@ -23,9 +28,12 @@ export default async function handler(req, res) {
         "application/json",
     };
 
-    if (req.headers["content-type"]) {
+    const contentType =
+      req.headers["content-type"];
+
+    if (typeof contentType === "string") {
       headers["Content-Type"] =
-        req.headers["content-type"];
+        contentType;
     }
 
     const options = {
@@ -40,7 +48,9 @@ export default async function handler(req, res) {
       options.body =
         typeof req.body === "string"
           ? req.body
-          : JSON.stringify(req.body ?? {});
+          : JSON.stringify(
+              req.body ?? {},
+            );
     }
 
     const response =
@@ -49,17 +59,17 @@ export default async function handler(req, res) {
         options,
       );
 
-    const contentType =
+    const responseType =
       response.headers.get(
         "content-type",
-      ) || "";
+      );
 
     res.status(response.status);
 
-    if (contentType) {
+    if (responseType) {
       res.setHeader(
         "Content-Type",
-        contentType,
+        responseType,
       );
     }
 
@@ -71,13 +81,13 @@ export default async function handler(req, res) {
     );
   } catch (error) {
     console.error(
-      "Backend proxy error:",
+      "Flood API proxy error:",
       error,
     );
 
     res.status(502).json({
       detail:
-        "Unable to reach flood-world-model API.",
+        "Flood World Model API is unreachable.",
     });
   }
 }
