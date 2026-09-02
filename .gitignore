@@ -103,3 +103,10 @@ data/static/
 data/interim/
 data/features/
 data/processed/
+# Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+frontend/.env
+frontend/.env.local
+frontend/.env.*.local

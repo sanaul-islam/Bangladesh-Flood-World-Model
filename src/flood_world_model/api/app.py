@@ -238,8 +238,8 @@ def hazard(
     ),
     forecast_day: int = Query(
         1,
-        ge=0,
-        le=6,
+        ge=1,
+        le=7,
     ),
     service: FloodWorldModelService = Depends(
         get_service
@@ -299,7 +299,111 @@ def hazard(
                 "Unable to calculate hazard."
             ),
         ) from error
+@app.get(
+    "/api/v1/hazard/grid",
+    tags=["hazard"],
+)
+def hazard_grid(
+    forecast_sample: int = Query(
+        0,
+        ge=0,
+    ),
+    forecast_day: int = Query(
+        1,
+        ge=1,
+        le=7,
+    ),
+    center_latitude: float = Query(
+        23.8103,
+        ge=-90.0,
+        le=90.0,
+    ),
+    center_longitude: float = Query(
+        90.4125,
+        ge=-180.0,
+        le=180.0,
+    ),
+    radius_degrees: float = Query(
+        0.30,
+        gt=0.01,
+        le=2.0,
+    ),
+    rows: int = Query(
+        9,
+        ge=3,
+        le=15,
+    ),
+    columns: int = Query(
+        9,
+        ge=3,
+        le=15,
+    ),
+    service: FloodWorldModelService = Depends(
+        get_service
+    ),
+):
+    try:
+        lat_min = center_latitude - radius_degrees
+        lat_max = center_latitude + radius_degrees
 
+        lon_min = center_longitude - radius_degrees
+        lon_max = center_longitude + radius_degrees
+
+        lat_step = (
+            (lat_max - lat_min) / (rows - 1)
+            if rows > 1
+            else 0.0
+        )
+
+        lon_step = (
+            (lon_max - lon_min) / (columns - 1)
+            if columns > 1
+            else 0.0
+        )
+
+        points = []
+
+        for row in range(rows):
+            latitude = lat_min + row * lat_step
+
+            for column in range(columns):
+                longitude = (
+                    lon_min + column * lon_step
+                )
+
+                result = service.hazard(
+                    latitude=latitude,
+                    longitude=longitude,
+                    forecast_sample=forecast_sample,
+                    forecast_day=forecast_day,
+                )
+
+                points.append(
+                    {
+                        "latitude": latitude,
+                        "longitude": longitude,
+                        "hazard_score": float(
+                            result["hazard_score"]
+                        ),
+                    }
+                )
+
+        return {
+            "forecast_sample": forecast_sample,
+            "forecast_day": forecast_day,
+            "center_latitude": center_latitude,
+            "center_longitude": center_longitude,
+            "radius_degrees": radius_degrees,
+            "rows": rows,
+            "columns": columns,
+            "points": points,
+        }
+
+    except ValueError as error:
+        raise HTTPException(
+            status_code=422,
+            detail=str(error),
+        ) from error
 
 @app.get(
     "/api/v1/shelters",
