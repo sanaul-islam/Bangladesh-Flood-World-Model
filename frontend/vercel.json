@@ -8,10 +8,6 @@
     {
       "source": "/health",
       "destination": "http://13.61.8.80:8000/health"
-    },
-    {
-      "source": "/(.*)",
-      "destination": "/index.html"
     }
   ]
 }
