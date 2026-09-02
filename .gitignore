@@ -110,3 +110,15 @@ frontend/.vite/
 frontend/.env
 frontend/.env.local
 frontend/.env.*.local
+
+# Node dependencies
+node_modules/
+
+# Frontend generated files
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+frontend/.env
+frontend/.env.local
+frontend/.env.*.local
+node_modules/
