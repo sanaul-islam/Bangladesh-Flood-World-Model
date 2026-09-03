@@ -298,66 +298,97 @@ class SQLiteRoadRouter:
         max_distance_km: float = DEFAULT_MAX_SEARCH_DISTANCE_KM,
         max_expanded_nodes: int = DEFAULT_MAX_EXPANDED_NODES,
     ) -> dict:
+        """
+        Risk-aware A* using a cost function expressed in seconds.
 
-        start_x, start_y = self.get_node(
-            start_node
+        Every edge cost is based on physical travel time multiplied by a
+        dimensionless flood/bridge/uncertainty penalty. The heuristic is a
+        lower bound on travel time derived from the fastest observed road
+        speed in the database, so distance limits are enforced on accumulated
+        road length rather than straight-line distance from the origin.
+        """
+        start_x, start_y = self.get_node(start_node)
+        goal_x, goal_y = self.get_node(goal_node)
+
+        max_distance_m = max(
+            float(max_distance_km) * 1000.0,
+            1.0,
         )
 
-        goal_x, goal_y = self.get_node(
-            goal_node
-        )
+        # Cache the fastest observed road speed. This gives A* a consistent
+        # time-based lower-bound heuristic without mixing metres and seconds.
+        max_speed_mps = getattr(self, "_max_speed_mps", None)
+        if max_speed_mps is None:
+            row = self.connection.execute(
+                """
+                SELECT MAX(
+                    CASE
+                        WHEN travel_time_s > 0
+                        THEN length_m / travel_time_s
+                        ELSE 0.0
+                    END
+                )
+                FROM edges
+                """
+            ).fetchone()
 
-        max_distance_m = (
-            max_distance_km * 1000.0
-        )
+            max_speed_mps = (
+                float(row[0])
+                if row is not None and row[0] is not None
+                else 13.8888888889
+            )
+
+            # Prevent a malformed/outlier database speed from making the
+            # heuristic excessively aggressive.
+            max_speed_mps = max(
+                min(max_speed_mps, 55.5555555556),  # 200 km/h ceiling
+                1.0,
+            )
+            self._max_speed_mps = max_speed_mps
+
+        def heuristic(node_x: float, node_y: float) -> float:
+            straight_line_m = math.hypot(
+                goal_x - node_x,
+                goal_y - node_y,
+            )
+            return straight_line_m / max_speed_mps
 
         queue = [
             (
-                0.0,
+                heuristic(start_x, start_y),
                 0.0,
                 int(start_node),
             )
         ]
 
         best_cost: dict[int, float] = {
-            int(start_node): 0.0
+            int(start_node): 0.0,
         }
 
         distance_from_start: dict[int, float] = {
-            int(start_node): 0.0
+            int(start_node): 0.0,
         }
 
         came_from: dict[int, int] = {}
-
         edge_for_node: dict[int, int] = {}
 
         expanded: set[int] = set()
-
         expanded_count = 0
 
         while queue:
-
             (
                 _priority,
                 current_cost,
                 current_node,
-            ) = heapq.heappop(
-                queue
-            )
+            ) = heapq.heappop(queue)
 
             if current_node in expanded:
                 continue
 
-            expanded.add(
-                current_node
-            )
-
+            expanded.add(current_node)
             expanded_count += 1
 
-            if (
-                expanded_count
-                > max_expanded_nodes
-            ):
+            if expanded_count > max_expanded_nodes:
                 raise RouteNotFoundError(
                     "A* expansion limit reached."
                 )
@@ -365,61 +396,58 @@ class SQLiteRoadRouter:
             if current_node == goal_node:
                 break
 
-            for row in self.neighbors(
-                current_node
-            ):
+            current_distance = distance_from_start[current_node]
 
-                edge_id = int(
-                    row[0]
-                )
-
-                u = int(
-                    row[1]
-                )
-
-                v = int(
-                    row[2]
-                )
+            for row in self.neighbors(current_node):
+                edge_id = int(row[0])
+                u = int(row[1])
+                v = int(row[2])
 
                 if u == current_node:
                     neighbor = v
-                    neighbor_x = float(
-                        row[7]
-                    )
-                    neighbor_y = float(
-                        row[8]
-                    )
+                    neighbor_x = float(row[7])
+                    neighbor_y = float(row[8])
                 else:
                     neighbor = u
-                    neighbor_x = float(
-                        row[5]
-                    )
-                    neighbor_y = float(
-                        row[6]
-                    )
+                    neighbor_x = float(row[5])
+                    neighbor_y = float(row[6])
 
                 if neighbor in expanded:
                     continue
 
-                length_m = float(
-                    row[3]
+                length_m = max(float(row[3]), 0.0)
+                base_travel_time_s = max(float(row[4]), 0.0)
+
+                if base_travel_time_s <= 0.0:
+                    # Defensive fallback for malformed edge records.
+                    base_travel_time_s = length_m / 13.8888888889
+
+                flood_risk = min(max(float(row[9]), 0.0), 1.0)
+                uncertainty_risk = min(max(float(row[10]), 0.0), 1.0)
+                bridge_risk = min(max(float(row[12]), 0.0), 1.0)
+
+                # Keep routing physically grounded in travel time, then
+                # increase that time by a dimensionless hazard penalty.
+                risk_multiplier = (
+                    1.0
+                    + FLOOD_WEIGHT * flood_risk
+                    + BRIDGE_WEIGHT * bridge_risk
+                    + UNCERTAINTY_WEIGHT * uncertainty_risk
                 )
 
-                risk_cost = max(
-                    float(
-                        row[14]
-                    ),
-                    0.0,
+                edge_cost = base_travel_time_s * risk_multiplier
+                candidate_cost = current_cost + edge_cost
+
+                candidate_distance = (
+                    current_distance + length_m
                 )
 
-                candidate_cost = (
-                    current_cost
-                    + risk_cost
-                )
+                # IMPORTANT: enforce the distance limit using accumulated
+                # road distance, not Euclidean distance from the origin.
+                if candidate_distance > max_distance_m:
+                    continue
 
-                previous = best_cost.get(
-                    neighbor
-                )
+                previous = best_cost.get(neighbor)
 
                 if (
                     previous is not None
@@ -427,48 +455,20 @@ class SQLiteRoadRouter:
                 ):
                     continue
 
-                distance_from_origin = math.hypot(
-                    neighbor_x - start_x,
-                    neighbor_y - start_y,
-                )
+                best_cost[neighbor] = candidate_cost
+                distance_from_start[neighbor] = candidate_distance
+                came_from[neighbor] = current_node
+                edge_for_node[neighbor] = edge_id
 
-                if (
-                    distance_from_origin
-                    > max_distance_m
-                ):
-                    continue
-
-                best_cost[
-                    neighbor
-                ] = candidate_cost
-
-                distance_from_start[
-                    neighbor
-                ] = (
-                    distance_from_start[
-                        current_node
-                    ]
-                    + length_m
-                )
-
-                came_from[
-                    neighbor
-                ] = current_node
-
-                edge_for_node[
-                    neighbor
-                ] = edge_id
-
-                heuristic = math.hypot(
-                    goal_x - neighbor_x,
-                    goal_y - neighbor_y,
+                h = heuristic(
+                    neighbor_x,
+                    neighbor_y,
                 )
 
                 heapq.heappush(
                     queue,
                     (
-                        candidate_cost
-                        + heuristic,
+                        candidate_cost + h,
                         candidate_cost,
                         neighbor,
                     ),
@@ -476,61 +476,37 @@ class SQLiteRoadRouter:
 
         if goal_node not in best_cost:
             raise RouteNotFoundError(
-                "No risk-aware route found within search limits."
+                "No risk-aware route found within the "
+                "road-distance and search limits."
             )
 
-        path = [
-            int(goal_node)
-        ]
-
+        path = [int(goal_node)]
         current = int(goal_node)
 
-        while current != int(
-            start_node
-        ):
-
+        while current != int(start_node):
             if current not in came_from:
                 raise RouteNotFoundError(
                     "Route reconstruction failed."
                 )
 
-            current = came_from[
-                current
-            ]
-
-            path.append(
-                current
-            )
+            current = came_from[current]
+            path.append(current)
 
         path.reverse()
 
         edge_ids = [
-            int(
-                edge_for_node[
-                    node
-                ]
-            )
-            for node in path[
-                1:
-            ]
+            int(edge_for_node[node])
+            for node in path[1:]
         ]
 
         return {
             "path": path,
             "edge_ids": edge_ids,
-            "risk_cost": float(
-                best_cost[
-                    goal_node
-                ]
-            ),
+            "risk_cost": float(best_cost[goal_node]),
             "road_distance_m": float(
-                distance_from_start[
-                    goal_node
-                ]
+                distance_from_start[goal_node]
             ),
-            "expanded_nodes": int(
-                expanded_count
-            ),
+            "expanded_nodes": int(expanded_count),
         }
 
     def _load_edge_statistics(

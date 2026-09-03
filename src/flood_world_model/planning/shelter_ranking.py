@@ -459,8 +459,9 @@ class ShelterRanker:
         forecast_day: int,
         candidate_count: int,
     ) -> dict:
-
         self._ensure_open()
+
+        candidate_count = max(int(candidate_count), 1)
 
         (
             user_node,
@@ -472,227 +473,217 @@ class ShelterRanker:
             user_longitude,
         )
 
+        # Do not restrict the search to the exact number of shelters that the
+        # UI asks us to display. Evaluate a broader pool so a nearby shelter
+        # that is slightly farther away in straight-line distance is not
+        # discarded before routing/risk evaluation.
+        evaluation_pool_size = min(
+            max(
+                DEFAULT_CANDIDATE_COUNT,
+                candidate_count * 4,
+            ),
+            40,
+        )
+
         candidates = self._candidates(
             user_x=user_x,
             user_y=user_y,
-            limit=candidate_count,
+            limit=evaluation_pool_size,
         )
 
         if not candidates:
             raise RouteNotFoundError(
-                "No mapped shelters found."
+                "No mapped shelters found near the requested location."
             )
 
-        evaluated = []
+        evaluated: list[dict] = []
+        failed_candidates: list[dict] = []
 
         for shelter in candidates:
-
-            latitude, longitude = (
-                self.router.xy_to_latlon(
-                    shelter[
-                        "x"
-                    ],
-                    shelter[
-                        "y"
-                    ],
+            try:
+                latitude, longitude = (
+                    self.router.xy_to_latlon(
+                        shelter["x"],
+                        shelter["y"],
+                    )
                 )
-            )
 
-            destination = (
-                self.destination_values(
+                destination = self.destination_values(
                     latitude=latitude,
                     longitude=longitude,
                     forecast_sample=forecast_sample,
                     forecast_day=forecast_day,
                 )
-            )
 
-            route = self.router.route(
-                start_latitude=user_latitude,
-                start_longitude=user_longitude,
-                goal_latitude=latitude,
-                goal_longitude=longitude,
-                max_distance_km=30.0,
-                max_expanded_nodes=DEFAULT_ROUTE_EXPANSION_LIMIT,
-            )
+                route = self.router.route(
+                    start_latitude=user_latitude,
+                    start_longitude=user_longitude,
+                    goal_latitude=latitude,
+                    goal_longitude=longitude,
+                    max_distance_km=30.0,
+                    max_expanded_nodes=DEFAULT_ROUTE_EXPANSION_LIMIT,
+                )
 
-            stats = route[
-                "statistics"
-            ]
+                stats = route["statistics"]
 
-            evaluated.append(
-                {
-                    "shelter_id": shelter[
-                        "shelter_id"
-                    ],
-                    "latitude": float(
-                        latitude
-                    ),
-                    "longitude": float(
-                        longitude
-                    ),
-                    "road_node": shelter[
-                        "road_node"
-                    ],
-                    "snap_distance_m": shelter[
-                        "snap_distance_m"
-                    ],
-                    "straight_distance_km": shelter[
-                        "straight_distance_km"
-                    ],
-                    "route": route,
-                    "road_distance_km": float(
-                        stats[
-                            "road_distance_km"
-                        ]
-                    ),
-                    "travel_time_min": float(
-                        stats[
-                            "estimated_travel_time_min"
-                        ]
-                    ),
-                    "risk_cost": float(
-                        stats[
-                            "risk_cost"
-                        ]
-                    ),
-                    "mean_flood_risk": float(
-                        stats[
-                            "mean_flood_risk"
-                        ]
-                    ),
-                    "maximum_flood_risk": float(
-                        stats[
-                            "maximum_flood_risk"
-                        ]
-                    ),
-                    "mean_uncertainty": float(
-                        stats[
-                            "mean_uncertainty_risk"
-                        ]
-                    ),
-                    "maximum_uncertainty": float(
-                        stats[
-                            "maximum_uncertainty_risk"
-                        ]
-                    ),
-                    "maximum_bridge_risk": float(
-                        stats[
-                            "maximum_bridge_risk"
-                        ]
-                    ),
-                    "bridge_edges": int(
-                        stats[
-                            "bridge_edges"
-                        ]
-                    ),
-                    "destination_hazard": float(
-                        destination[
-                            "hazard_score"
-                        ]
-                    ),
-                    "destination_population_exposure": float(
-                        destination[
-                            "population_exposure"
-                        ]
-                    ),
-                    "destination_population_component": (
-                        destination[
-                            "population_component"
-                        ]
-                    ),
-                    "destination_population_density": (
-                        destination[
-                            "population_density"
-                        ]
-                    ),
-                    "destination_hazard_sampling": destination[
-                        "hazard_sampling"
-                    ],
-                    "destination_exposure_sampling": destination[
-                        "exposure_sampling"
-                    ],
-                    "availability": "unknown",
-                    "capacity": None,
-                    "source": "OSM",
-                }
-            )
+                evaluated.append(
+                    {
+                        "shelter_id": shelter["shelter_id"],
+                        "latitude": float(latitude),
+                        "longitude": float(longitude),
+                        "road_node": shelter["road_node"],
+                        "snap_distance_m": shelter["snap_distance_m"],
+                        "straight_distance_km": shelter[
+                            "straight_distance_km"
+                        ],
+                        "route": route,
+                        "road_distance_km": float(
+                            stats["road_distance_km"]
+                        ),
+                        "travel_time_min": float(
+                            stats["estimated_travel_time_min"]
+                        ),
+                        "risk_cost": float(
+                            stats["risk_cost"]
+                        ),
+                        "mean_flood_risk": float(
+                            stats["mean_flood_risk"]
+                        ),
+                        "maximum_flood_risk": float(
+                            stats["maximum_flood_risk"]
+                        ),
+                        "mean_uncertainty": float(
+                            stats["mean_uncertainty_risk"]
+                        ),
+                        "maximum_uncertainty": float(
+                            stats["maximum_uncertainty_risk"]
+                        ),
+                        "maximum_bridge_risk": float(
+                            stats["maximum_bridge_risk"]
+                        ),
+                        "bridge_edges": int(
+                            stats["bridge_edges"]
+                        ),
+                        "destination_hazard": float(
+                            destination["hazard_score"]
+                        ),
+                        "destination_population_exposure": float(
+                            destination["population_exposure"]
+                        ),
+                        "destination_population_component": (
+                            destination[
+                                "population_component"
+                            ]
+                        ),
+                        "destination_population_density": (
+                            destination[
+                                "population_density"
+                            ]
+                        ),
+                        "destination_hazard_sampling": destination[
+                            "hazard_sampling"
+                        ],
+                        "destination_exposure_sampling": destination[
+                            "exposure_sampling"
+                        ],
+                        "availability": "unknown",
+                        "capacity": None,
+                        "source": "OSM",
+                    }
+                )
+
+            except (
+                RouteNotFoundError,
+                RuntimeError,
+                ValueError,
+            ) as exc:
+                # An individual shelter failing to route or sample should not
+                # abort the entire evacuation request. Continue evaluating the
+                # remaining nearby candidates.
+                failed_candidates.append(
+                    {
+                        "shelter_id": shelter["shelter_id"],
+                        "reason": str(exc),
+                    }
+                )
+                continue
 
         if not evaluated:
             raise RouteNotFoundError(
-                "No reachable shelter had valid forecast coverage."
+                "No nearby shelter had a valid road route and "
+                "forecast coverage. Try a different starting location."
             )
 
+        # Build a stable route-risk metric from normalized flood/bridge
+        # characteristics rather than using a mixed-unit raw cost.
+        route_risk_metrics = [
+            float(
+                np.clip(
+                    0.60 * item["mean_flood_risk"]
+                    + 0.25 * item["maximum_flood_risk"]
+                    + 0.15 * item["maximum_bridge_risk"],
+                    0.0,
+                    1.0,
+                )
+            )
+            for item in evaluated
+        ]
+
         risk_scores = self._normalize(
-            [
-                item[
-                    "risk_cost"
-                ]
-                for item in evaluated
-            ]
+            route_risk_metrics
         )
 
         time_scores = self._normalize(
             [
-                item[
-                    "travel_time_min"
-                ]
+                item["travel_time_min"]
+                for item in evaluated
+            ]
+        )
+
+        distance_scores = self._normalize(
+            [
+                item["road_distance_km"]
                 for item in evaluated
             ]
         )
 
         bridge_scores = self._normalize(
             [
-                float(
-                    item[
-                        "bridge_edges"
-                    ]
-                )
+                float(item["bridge_edges"])
                 for item in evaluated
             ]
         )
 
-        for i, item in enumerate(
-            evaluated
-        ):
+        for i, item in enumerate(evaluated):
+            item["route_risk_metric"] = route_risk_metrics[i]
 
-            item[
-                "route_risk_score"
-            ] = float(
+            item["route_risk_score"] = float(
                 risk_scores[i]
             )
 
-            item[
-                "travel_time_score"
-            ] = float(
+            item["travel_time_score"] = float(
                 time_scores[i]
             )
 
-            item[
-                "bridge_score"
-            ] = float(
+            item["road_distance_score"] = float(
+                distance_scores[i]
+            )
+
+            item["bridge_score"] = float(
                 bridge_scores[i]
             )
 
-            item[
-                "accessibility_score"
-            ] = float(
+            item["accessibility_score"] = float(
                 1.0 - risk_scores[i]
             )
 
-            item[
-                "combined_score"
-            ] = float(
-                ROUTE_RISK_WEIGHT
-                * risk_scores[i]
+            # Lower is better for every term in this score.
+            item["combined_score"] = float(
+                ROUTE_RISK_WEIGHT * risk_scores[i]
                 + DESTINATION_HAZARD_WEIGHT
-                * item[
-                    "destination_hazard"
-                ]
+                * item["destination_hazard"]
                 + DESTINATION_EXPOSURE_WEIGHT
-                * item[
-                    "destination_population_exposure"
-                ]
+                * item["destination_population_exposure"]
                 + TRAVEL_TIME_WEIGHT
                 * time_scores[i]
                 + BRIDGE_WEIGHT
@@ -701,12 +692,9 @@ class ShelterRanker:
 
         evaluated.sort(
             key=lambda item: (
-                item[
-                    "combined_score"
-                ],
-                item[
-                    "travel_time_min"
-                ],
+                item["combined_score"],
+                item["travel_time_min"],
+                item["road_distance_km"],
             )
         )
 
@@ -714,13 +702,15 @@ class ShelterRanker:
             evaluated,
             start=1,
         ):
-            item[
-                "rank"
-            ] = rank
+            item["rank"] = rank
 
-        best = evaluated[
-            0
+        # Return only the requested number of results, while still evaluating
+        # a broader candidate pool above.
+        selected = evaluated[
+            :candidate_count
         ]
+
+        best = selected[0]
 
         return {
             "system": {
@@ -737,8 +727,14 @@ class ShelterRanker:
                 "candidate_shelters": int(
                     candidate_count
                 ),
+                "evaluated_candidate_shelters": int(
+                    len(candidates)
+                ),
                 "reachable_shelters": int(
                     len(evaluated)
+                ),
+                "unreachable_or_invalid_shelters": int(
+                    len(failed_candidates)
                 ),
                 "total_mapped_shelters": int(
                     self.connection.execute(
@@ -782,18 +778,14 @@ class ShelterRanker:
                 for key, value in best.items()
                 if key != "route"
             },
-            "route": best[
-                "route"
-            ],
+            "route": best["route"],
             "alternatives": [
                 {
                     key: value
                     for key, value in item.items()
                     if key != "route"
                 }
-                for item in evaluated[
-                    1:
-                ]
+                for item in selected[1:]
             ],
         }
 
